@@ -1,0 +1,28 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "/^cd frontend ; npm install$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^npx hardhat compile$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^npx hardhat run scripts/deploy\\.js --network localhost$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^npx hardhat run \"C:\\\\Users\\\\keert\\\\OneDrive\\\\Documents\\\\real-estate-dapp\\\\scripts\\\\deploy\\.js\" --network localhost$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^cd frontend; npm run dev$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^\\$env:FRONTEND_ORIGIN=\"http://localhost:3000\"; npx hardhat run scripts/deploy\\.js --network localhost$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
+}

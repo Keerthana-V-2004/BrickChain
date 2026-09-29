@@ -1,0 +1,14 @@
+{
+  "name": "Pinecrest Mountain Cabin",
+  "address": "16 Summit Trail, Flagstaff, AZ",
+  "description": "A warm timber cabin tucked among pines, with a stone fireplace and a wide mountain-view deck.",
+  "image": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1200&q=85",
+  "attributes": [
+    { "trait_type": "Purchase Price", "value": "315" },
+    { "trait_type": "Type of Residence", "value": "Cabin" },
+    { "trait_type": "Bed Rooms", "value": "3" },
+    { "trait_type": "Bathrooms", "value": "2" },
+    { "trait_type": "Square Feet", "value": "1640" },
+    { "trait_type": "Year Built", "value": "2019" }
+  ]
+}

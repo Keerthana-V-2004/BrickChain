@@ -1,0 +1,22 @@
+{
+  "name": "real-estate-dapp",
+  "version": "1.0.0",
+  "description": "Blockchain Real Estate Dapp - Hardhat + Solidity backend",
+  "scripts": {
+    "compile": "hardhat compile",
+    "postcompile": "node scripts/copy-abis.js",
+    "test": "hardhat test",
+    "chain": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:polygon": "hardhat run scripts/deploy.js --network polygon"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.4",
+    "dotenv": "^16.3.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.6"
+  }
+}

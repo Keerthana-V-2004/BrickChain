@@ -1,0 +1,14 @@
+{
+  "name": "Cedar Ridge Ranch",
+  "address": "88 Meadow Road, Bend, OR",
+  "description": "A single-level ranch home with broad windows, a covered patio, and room for a workshop.",
+  "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=85",
+  "attributes": [
+    { "trait_type": "Purchase Price", "value": "640" },
+    { "trait_type": "Type of Residence", "value": "Ranch" },
+    { "trait_type": "Bed Rooms", "value": "4" },
+    { "trait_type": "Bathrooms", "value": "3" },
+    { "trait_type": "Square Feet", "value": "2860" },
+    { "trait_type": "Year Built", "value": "2017" }
+  ]
+}
