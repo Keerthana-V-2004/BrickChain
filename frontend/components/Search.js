@@ -29,10 +29,6 @@ export default function Search({
     return () => window.clearInterval(interval);
   }, [slides.length, isPaused]);
 
-  function moveSlide(offset) {
-    setActiveSlide((current) => (current + offset + slides.length) % slides.length);
-  }
-
   return (
     <header className="market-search">
       <section
@@ -62,25 +58,6 @@ export default function Search({
           <h2>Find a place you’ll love to call home.</h2>
           <p className="hero__copy">Thoughtful homes. Clear details. A better way to make your next move.</p>
           {activeHome && <p className="hero__caption">Featured: {activeHome.name} · {activeHome.address}</p>}
-          {slides.length > 1 && (
-            <div className="hero__controls" aria-label="Featured property controls">
-              <button type="button" onClick={() => moveSlide(-1)} aria-label="Previous featured property">‹</button>
-              <span className="hero__counter">{activeSlide + 1} / {slides.length}</span>
-              <div className="hero__indicators" role="group" aria-label="Choose featured property">
-                {slides.map((home, index) => (
-                  <button
-                    className={index === activeSlide ? "is-active" : ""}
-                    type="button"
-                    key={home.id}
-                    aria-label={`Show ${home.name}`}
-                    aria-current={index === activeSlide ? "true" : undefined}
-                    onClick={() => setActiveSlide(index)}
-                  />
-                ))}
-              </div>
-              <button type="button" onClick={() => moveSlide(1)} aria-label="Next featured property">›</button>
-            </div>
-          )}
         </div>
       </section>
       <div className="search" id="property-search">

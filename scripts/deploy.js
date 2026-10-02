@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 async function main() {
-  const [seller, buyer, inspector, lender] = await hre.ethers.getSigners();
+  const [deployer, seller, buyer, inspector, lender] = await hre.ethers.getSigners();
   const network = hre.network.name;
   const chainId = hre.network.config.chainId || (await hre.ethers.provider.getNetwork()).chainId;
 
@@ -35,8 +35,15 @@ async function main() {
   }
 
   for (let i = 0; i < properties.length; i++) {
-    const tx = await realEstate.connect(seller).mint(properties[i]);
-    await tx.wait();
+    const submitTx = await realEstate.connect(seller).submitProperty(properties[i]);
+    await submitTx.wait();
+
+    const submissionId = i + 1;
+    const verifyTx = await realEstate.connect(deployer).verifyProperty(submissionId);
+    await verifyTx.wait();
+
+    const mintTx = await realEstate.connect(seller).mintVerifiedProperty(submissionId);
+    await mintTx.wait();
   }
   console.log(`Minted ${properties.length} properties to seller`);
 

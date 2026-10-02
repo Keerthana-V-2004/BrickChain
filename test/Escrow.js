@@ -3,17 +3,19 @@ const { ethers } = require("hardhat");
 
 describe("Escrow", () => {
   let realEstate, escrow;
-  let seller, buyer, inspector, lender;
+  let admin, seller, buyer, inspector, lender;
   const tokenId = 1;
   const purchasePrice = ethers.parseEther("10");
   const escrowAmount = ethers.parseEther("2");
 
   beforeEach(async () => {
-    [seller, buyer, inspector, lender] = await ethers.getSigners();
+    [admin, seller, buyer, inspector, lender] = await ethers.getSigners();
 
     const RealEstate = await ethers.getContractFactory("RealEstate");
     realEstate = await RealEstate.deploy();
-    await realEstate.connect(seller).mint("https://example.com/1.json");
+    await realEstate.connect(seller).submitProperty("https://example.com/1.json");
+    await realEstate.connect(admin).verifyProperty(1);
+    await realEstate.connect(seller).mintVerifiedProperty(1);
 
     const Escrow = await ethers.getContractFactory("Escrow");
     escrow = await Escrow.deploy(
@@ -63,5 +65,28 @@ describe("Escrow", () => {
     await expect(
       escrow.connect(seller).cancelSale(tokenId)
     ).to.changeEtherBalances([escrow, buyer], [-escrowAmount, escrowAmount]);
+  });
+});
+
+describe("RealEstate verification workflow", () => {
+  let realEstate;
+  let admin, seller, buyer;
+
+  beforeEach(async () => {
+    [admin, seller, buyer] = await ethers.getSigners();
+    const RealEstate = await ethers.getContractFactory("RealEstate");
+    realEstate = await RealEstate.deploy();
+    await realEstate.connect(seller).submitProperty("https://example.com/pending.json");
+  });
+
+  it("prevents non-admins from verifying a submission", async () => {
+    await expect(realEstate.connect(buyer).verifyProperty(1)).to.be.reverted;
+  });
+
+  it("prevents the seller from minting before verification", async () => {
+    await expect(realEstate.connect(seller).mintVerifiedProperty(1)).to.be.revertedWith(
+      "property not verified"
+    );
+    expect(await realEstate.totalSupply()).to.equal(0);
   });
 });
