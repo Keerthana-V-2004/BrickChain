@@ -67,7 +67,8 @@ export default async function handler(req, res) {
     res.setHeader("Cache-Control", "no-store");
     res.setHeader("Set-Cookie", [
       clearAuthCookie(NONCE_COOKIE, req),
-      serializeAuthCookie(SESSION_COOKIE, sessionToken, req, SESSION_MAX_AGE),
+      clearAuthCookie(SESSION_COOKIE, req),
+      serializeAuthCookie(SESSION_COOKIE, sessionToken, req, SESSION_MAX_AGE, "/"),
     ]);
     return res.status(200).json({ address: normalizedAddress });
   } catch (error) {

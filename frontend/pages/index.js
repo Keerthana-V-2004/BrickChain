@@ -4,11 +4,18 @@ import { ethers } from "ethers";
 import Navigation from "../components/Navigation";
 import Search from "../components/Search";
 import HomeModal from "../components/Home";
+import PropertyManager from "../components/PropertyManager";
 
 import RealEstateABI from "../abis/RealEstate.json";
 import EscrowABI from "../abis/Escrow.json";
 import config from "../config.json";
 import { createSignInMessage } from "../lib/auth-message";
+
+function resolveIpfsUri(uri) {
+  if (typeof uri !== "string" || !uri.startsWith("ipfs://")) return uri;
+  const path = uri.slice("ipfs://".length).replace(/^ipfs\//, "");
+  return `https://gateway.pinata.cloud/ipfs/${path}`;
+}
 
 export default function HomePage() {
   const [provider, setProvider] = useState(null);
@@ -24,10 +31,12 @@ export default function HomePage() {
   const [selectedHome, setSelectedHome] = useState(null);
   const [toggle, setToggle] = useState(false);
   const [showListingPicker, setShowListingPicker] = useState(false);
+  const [showPropertyManager, setShowPropertyManager] = useState(false);
   const [sellerHomes, setSellerHomes] = useState([]);
   const [realEstate, setRealEstate] = useState(null);
   const [defaultBuyer, setDefaultBuyer] = useState("");
   const [sellerAddress, setSellerAddress] = useState("");
+  const [adminAddress, setAdminAddress] = useState("");
   const [theme, setTheme] = useState("light");
   const [authenticatedAddress, setAuthenticatedAddress] = useState("");
   const [authenticatedChainId, setAuthenticatedChainId] = useState(null);
@@ -126,13 +135,14 @@ export default function HomePage() {
     setRealEstate(realEstate);
     setEscrow(escrow);
     setDefaultBuyer(networkConfig.accounts?.buyer || "");
+    setAdminAddress(networkConfig.accounts?.admin || "");
     setSellerAddress(await escrow.seller());
 
     const totalSupply = await realEstate.totalSupply();
     const homesList = [];
     for (let i = 1; i <= Number(totalSupply); i++) {
       const uri = await realEstate.tokenURI(i);
-      const metadataUrl = new URL(uri, window.location.origin);
+      const metadataUrl = new URL(resolveIpfsUri(uri), window.location.origin);
       if (
         ["localhost", "127.0.0.1"].includes(metadataUrl.hostname) &&
         metadataUrl.pathname.startsWith("/metadata/")
@@ -142,6 +152,7 @@ export default function HomePage() {
       const response = await fetch(metadataUrl);
       if (!response.ok) throw new Error(`Could not load metadata for property ${i}.`);
       const metadata = await response.json();
+      metadata.image = resolveIpfsUri(metadata.image);
       const isListed = await escrow.isListed(i);
       homesList.push({ id: i, isListed, ...metadata });
     }
@@ -255,6 +266,9 @@ export default function HomePage() {
     account.toLowerCase() === authenticatedAddress.toLowerCase() &&
     Number(walletChainId) === authenticatedChainId
   );
+  const isAdmin = Boolean(
+    account && adminAddress && account.toLowerCase() === adminAddress.toLowerCase() && isAuthenticated
+  );
 
   return (
     <div>
@@ -263,8 +277,9 @@ export default function HomePage() {
         setAccount={setAccount}
         onConnected={loadBlockchainData}
         isSeller={account?.toLowerCase() === sellerAddress.toLowerCase() && isAuthenticated}
+        isAdmin={isAdmin}
         canListProperty={homes.some((home) => !home.isListed)}
-        onListProperty={openListingPicker}
+        onManageProperties={() => setShowPropertyManager(true)}
         isAuthenticated={isAuthenticated}
         authBusy={authBusy}
         authError={authError}
@@ -398,6 +413,24 @@ export default function HomePage() {
           </section>
         </div>
       )}
+
+      <PropertyManager
+        open={showPropertyManager}
+        provider={provider}
+        realEstate={realEstate}
+        account={account}
+        isSeller={account?.toLowerCase() === sellerAddress.toLowerCase()}
+        isAdmin={isAdmin}
+        isAuthenticated={isAuthenticated}
+        onClose={() => setShowPropertyManager(false)}
+        onMinted={loadBlockchainData}
+        onListExisting={account?.toLowerCase() === sellerAddress.toLowerCase() && sellerAddress
+          ? () => {
+              setShowPropertyManager(false);
+              openListingPicker();
+            }
+          : null}
+      />
 
       {toggle && selectedHome && (
         <HomeModal

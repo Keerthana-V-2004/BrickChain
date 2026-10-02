@@ -5,8 +5,9 @@ export default function Navigation({
   setAccount,
   onConnected,
   isSeller,
+  isAdmin,
   canListProperty,
-  onListProperty,
+  onManageProperties,
   theme,
   onThemeChange,
   isAuthenticated,
@@ -63,15 +64,14 @@ export default function Navigation({
             <span className="theme-toggle__thumb" />
           </span>
         </button>
-        {isSeller && (
+        {(isSeller || isAdmin) && (
           <button
             type="button"
             className="nav__list"
-            onClick={onListProperty}
-            disabled={!canListProperty}
-            title={canListProperty ? "List one of your properties" : "No unlisted properties available"}
+            onClick={onManageProperties}
+            title={isAdmin ? "Submit properties or review submissions" : "Submit a property or list an existing NFT"}
           >
-            + Add Property
+            Property tools
           </button>
         )}
         {account && (

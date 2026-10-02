@@ -20,6 +20,7 @@ export default function handler(req, res) {
     res.setHeader("Set-Cookie", [
       clearAuthCookie(NONCE_COOKIE, req),
       clearAuthCookie(SESSION_COOKIE, req),
+      clearAuthCookie(SESSION_COOKIE, req, "/"),
     ]);
     return res.status(200).json({ authenticated: false });
   } catch (error) {

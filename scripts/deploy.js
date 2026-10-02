@@ -91,6 +91,7 @@ async function main() {
     realEstate: { address: realEstateAddress },
     escrow: { address: escrowAddress },
     accounts: {
+      admin: deployer.address,
       seller: seller.address,
       buyer: buyer.address,
       inspector: inspector.address,
@@ -102,6 +103,7 @@ async function main() {
 
   console.log("\nDeployment finished. Roles for local testing:");
   console.log("  seller:   ", seller.address);
+  console.log("  admin:    ", deployer.address);
   console.log("  buyer:    ", buyer.address);
   console.log("  inspector:", inspector.address);
   console.log("  lender:   ", lender.address);

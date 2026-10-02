@@ -89,4 +89,14 @@ describe("RealEstate verification workflow", () => {
     );
     expect(await realEstate.totalSupply()).to.equal(0);
   });
+
+  it("stores the IPFS metadata URI when a verified seller mints", async () => {
+    const metadataUri = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh3v2c4n7j2j4j4y3j4j4j4j4j4j4j4";
+    await realEstate.connect(seller).submitProperty(metadataUri);
+    await realEstate.connect(admin).verifyProperty(2);
+    await realEstate.connect(seller).mintVerifiedProperty(2);
+
+    expect(await realEstate.tokenURI(1)).to.equal(metadataUri);
+    expect(await realEstate.ownerOf(1)).to.equal(seller.address);
+  });
 });

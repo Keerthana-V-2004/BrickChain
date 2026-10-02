@@ -104,13 +104,32 @@ To add a brand-new chain (e.g. Avalanche, Arbitrum, Base): add a `networks`
 entry in `hardhat.config.js` with its RPC URL and chain ID, add the matching
 env vars to `.env`, then deploy the same way.
 
-## 5. Property metadata & images
+## 5. Property metadata
 
-The sample metadata in `metadata/*.json` follows the OpenSea-style schema.
-Upload your property photos and these JSON files to IPFS (e.g. via
-[Pinata](https://pinata.cloud) or [nft.storage](https://nft.storage)), then
-update the `properties` array in `scripts/deploy.js` with your own IPFS URIs
-before minting.
+```json
+{
+  "name": "Modern Family Home",
+  "description": "A modern 4-bedroom home.",
+  "address": "Austin, TX",
+  "image": "ipfs://<image-CID>",
+  "attributes": [
+    { "trait_type": "Purchase Price", "value": "500" },
+    { "trait_type": "Type of Residence", "value": "Single Family" },
+    { "trait_type": "Bed Rooms", "value": 4 },
+    { "trait_type": "Bathrooms", "value": 3 },
+    { "trait_type": "Square Feet", "value": 2500 },
+    { "trait_type": "Year Built", "value": 2010 }
+  ]
+}
+```
+
+Keep attributes in this order for the current frontend. Price is a decimal ETH
+string. Upload the image, then JSON; pass `ipfs://<metadata-CID>` to
+`submitProperty`. IPFS data is public, so exclude private information.
+
+For seller uploads, set `PINATA_JWT` in `frontend/.env.local` using
+`frontend/.env.example` as a template. Keep it server-side; do not prefix it
+with `NEXT_PUBLIC_`. Images are compressed to WebP and capped at 2 MB.
 
 ## How the sale flow works (Escrow.sol)
 

@@ -39,14 +39,14 @@ export function isSameOriginRequest(req, siteOrigin) {
   return req.headers.origin === siteOrigin;
 }
 
-export function serializeAuthCookie(name, value, req, maxAge) {
+export function serializeAuthCookie(name, value, req, maxAge, path = "/api/auth") {
   const secure = process.env.NODE_ENV === "production" ||
     req.headers["x-forwarded-proto"] === "https";
-  return `${name}=${encodeURIComponent(value)}; Path=/api/auth; Max-Age=${maxAge}; HttpOnly; SameSite=Strict${secure ? "; Secure" : ""}`;
+  return `${name}=${encodeURIComponent(value)}; Path=${path}; Max-Age=${maxAge}; HttpOnly; SameSite=Strict${secure ? "; Secure" : ""}`;
 }
 
-export function clearAuthCookie(name, req) {
-  return serializeAuthCookie(name, "", req, 0);
+export function clearAuthCookie(name, req, path = "/api/auth") {
+  return serializeAuthCookie(name, "", req, 0, path);
 }
 
 export function createSessionToken(address, chainId) {
