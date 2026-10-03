@@ -335,6 +335,35 @@ h1, h2, h3 { font-family: var(--font-interface), sans-serif; font-weight: 600; }
 .home__overview ul { list-style: none; display: flex; gap: 1rem; margin: 1rem 0; flex-wrap: wrap; }
 .home__overview li { background: var(--color-soft); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.9rem; }
 
+.home__documents, .home__history {
+  margin-top: 1.2rem;
+}
+
+.home__documents ul {
+  margin-top: 0.5rem;
+  list-style: none;
+}
+
+.home__documents li + li,
+.history-timeline li + li {
+  margin-top: 0.35rem;
+}
+
+.history-timeline {
+  list-style: none;
+  margin-top: 0.5rem;
+}
+
+.history-timeline li {
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+
+.history-date {
+  color: var(--color-muted);
+}
+
 .home__buy, .home__contact {
   background: var(--color-accent);
   color: white;

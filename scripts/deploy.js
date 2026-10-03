@@ -28,10 +28,10 @@ async function main() {
   // If we're on a local Hardhat network, use the frontend's local metadata
   // files so the UI can load property cards without uploading to IPFS.
   // Allow overriding the frontend origin via environment variable `FRONTEND_ORIGIN`.
-  // Defaults to http://localhost:3000 for local testing.
+  // Default to the port currently used by the local Next.js app (3001 when 3000 is busy).
   if (network === 'localhost' || chainId === 31337) {
-    const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
-      properties = propertyIds.map((id) => `${frontendOrigin}/metadata/${id}.json`);
+    const frontendOrigin = process.env.FRONTEND_ORIGIN || 'http://localhost:3001';
+    properties = propertyIds.map((id) => `${frontendOrigin}/metadata/${id}.json`);
   }
 
   for (let i = 0; i < properties.length; i++) {

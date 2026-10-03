@@ -10,12 +10,7 @@ import RealEstateABI from "../abis/RealEstate.json";
 import EscrowABI from "../abis/Escrow.json";
 import config from "../config.json";
 import { createSignInMessage } from "../lib/auth-message";
-
-function resolveIpfsUri(uri) {
-  if (typeof uri !== "string" || !uri.startsWith("ipfs://")) return uri;
-  const path = uri.slice("ipfs://".length).replace(/^ipfs\//, "");
-  return `https://gateway.pinata.cloud/ipfs/${path}`;
-}
+import { resolveIpfsUri, fetchWithFallback } from "../lib/ipfs";
 
 export default function HomePage() {
   const [provider, setProvider] = useState(null);
@@ -34,6 +29,7 @@ export default function HomePage() {
   const [showPropertyManager, setShowPropertyManager] = useState(false);
   const [sellerHomes, setSellerHomes] = useState([]);
   const [realEstate, setRealEstate] = useState(null);
+  const [accounts, setAccounts] = useState(null);
   const [defaultBuyer, setDefaultBuyer] = useState("");
   const [sellerAddress, setSellerAddress] = useState("");
   const [adminAddress, setAdminAddress] = useState("");
@@ -134,6 +130,7 @@ export default function HomePage() {
     );
     setRealEstate(realEstate);
     setEscrow(escrow);
+    setAccounts(networkConfig.accounts ?? null);
     setDefaultBuyer(networkConfig.accounts?.buyer || "");
     setAdminAddress(networkConfig.accounts?.admin || "");
     setSellerAddress(await escrow.seller());
@@ -142,17 +139,16 @@ export default function HomePage() {
     const homesList = [];
     for (let i = 1; i <= Number(totalSupply); i++) {
       const uri = await realEstate.tokenURI(i);
-      const metadataUrl = new URL(resolveIpfsUri(uri), window.location.origin);
-      if (
-        ["localhost", "127.0.0.1"].includes(metadataUrl.hostname) &&
-        metadataUrl.pathname.startsWith("/metadata/")
-      ) {
-        metadataUrl.host = window.location.host;
-      }
-      const response = await fetch(metadataUrl);
+      const response = await fetchWithFallback(uri);
       if (!response.ok) throw new Error(`Could not load metadata for property ${i}.`);
       const metadata = await response.json();
+
       metadata.image = resolveIpfsUri(metadata.image);
+      metadata.documents = (metadata.documents || []).map((doc) => ({
+        ...doc,
+        url: resolveIpfsUri(doc.cid),
+      }));
+
       const isListed = await escrow.isListed(i);
       homesList.push({ id: i, isListed, ...metadata });
     }
@@ -438,6 +434,7 @@ export default function HomePage() {
           provider={provider}
           escrow={escrow}
           realEstate={realEstate}
+          accounts={accounts}
           account={account}
           isAuthenticated={isAuthenticated}
           defaultBuyer={defaultBuyer}

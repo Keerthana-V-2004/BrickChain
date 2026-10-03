@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
+import { getOwnershipHistory, labelAddress } from "../lib/ownership";
 
 export default function Home({
   home,
   provider,
   escrow,
   realEstate,
+  accounts,
   account,
   isAuthenticated,
   defaultBuyer,
@@ -30,11 +32,15 @@ export default function Home({
   );
   const [listingBusy, setListingBusy] = useState(false);
   const [listingError, setListingError] = useState("");
+  const [ownershipHistory, setOwnershipHistory] = useState([]);
 
   useEffect(() => {
     fetchDetails();
     fetchOwner();
-  }, [home, escrow, realEstate]);
+    if (realEstate) {
+      getOwnershipHistory(realEstate, home.id).then(setOwnershipHistory);
+    }
+  }, [home, escrow, realEstate, accounts]);
 
   async function fetchDetails() {
     if (!escrow) return;
@@ -195,6 +201,39 @@ export default function Home({
           <h3>Description</h3>
           <p>{home.description}</p>
         </div>
+
+        {home.documents && home.documents.length > 0 && (
+          <div className="home__documents">
+            <h3>Documents</h3>
+            <ul>
+              {home.documents.map((doc) => (
+                <li key={doc.cid}>
+                  <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                    {doc.type}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {ownershipHistory.length > 0 && (
+          <div className="home__history">
+            <h3>Ownership History</h3>
+            <ol className="history-timeline">
+              {ownershipHistory.map((event) => (
+                <li key={event.txHash}>
+                  {labelAddress(event.from, accounts, escrow?.target || escrow?.address)}
+                  {" → "}
+                  {labelAddress(event.to, accounts, escrow?.target || escrow?.address)}
+                  <span className="history-date">
+                    {" · "}{new Date(event.timestamp * 1000).toLocaleDateString()}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         <div>
           {!home.isListed ? account?.toLowerCase() === seller?.toLowerCase() && provider && isAuthenticated ? (
