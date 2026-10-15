@@ -1,4 +1,4 @@
-# EstateHub dApp
+# BrickChain dApp
 
 A full-stack decentralized app for listing and buying real estate as NFTs,
 with an on-chain escrow that coordinates buyer, seller, inspector, and lender.
